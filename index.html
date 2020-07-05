@@ -33,6 +33,7 @@
             report(result.state);
           } else if (result.state == 'prompt') {
             report(result.state);
+            geolocation.getCurrentPosition(() => {},() => {}, options);
           } else if (result.state == 'denied') {
             report(result.state);
           }
