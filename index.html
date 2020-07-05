@@ -1,0 +1,55 @@
+<html>
+  <head>
+    <title>Speed Test</title>
+    <meta name="viewport" content="width=device-width">
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <div class="container">
+        <header>
+          <h1>Speed: <span id='speed'></div></h1>
+        </header>    
+    </div>
+    <script>
+      let watchID = null;
+      function success(position) {
+        console.log(position.coords);
+        document.querySelector('#speed').innerText = (position.coords.speed/ 1000) * 3600;
+      }
+
+      function error() {
+        alert('Sorry, no position available.');
+      }
+
+      const options = {
+        enableHighAccuracy: true, 
+        maximumAge: 5000, 
+        timeout: 5000
+      };
+
+      function handlePermission() {
+        navigator.permissions.query({name:'geolocation'}).then(function(result) {
+          if (result.state == 'granted') {
+            report(result.state);
+          } else if (result.state == 'prompt') {
+            report(result.state);
+          } else if (result.state == 'denied') {
+            report(result.state);
+          }
+          result.onchange = function() {
+            report(result.state);
+          }
+        });
+      }
+
+      function report(state) {
+        console.log('Permission ' + state);
+        if(state === 'granted'){
+          watchID = navigator.geolocation.watchPosition(success, error, options);
+        }
+      }
+
+      handlePermission();
+    </script>
+  </body>
+</html>
