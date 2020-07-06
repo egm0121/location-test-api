@@ -37,7 +37,7 @@
   </head>
   <body>
     <h1 id="meter"><span id='speed'>0</span><small> Km/h</small></h1>
-    <input type="button" id="start-app" onclick="getLocationIos()" value="Start" />
+    <input type="button" id="start-app" onclick="report('granted')" value="Start" />
     <script>
       let watchID = null;
       let lastNotifiedSpeed = 0;
@@ -58,9 +58,6 @@
         speed.pitch = 2;
         speechSynthesis.speak(speedSpeech);
       };
-      function getLocationIos() {
-        navigator.geolocation.getCurrentPosition(() => {},() => {}, options);
-      }
       function error() {
         console.log('Sorry, no position available.');
       }
