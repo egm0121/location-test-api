@@ -86,10 +86,8 @@
 
       function report(state) {
         console.log('Permission ' + state);
-        if(state === 'granted'){
-          navigator.geolocation.clearWatch(watchID);
-          watchID = navigator.geolocation.watchPosition(onSpeedUpdate, error, options);
-        }
+        if (watchID) navigator.geolocation.clearWatch(watchID);
+        watchID = navigator.geolocation.watchPosition(onSpeedUpdate, error, options);
       }
       $start = document.querySelector('#start-app');
       $start.addEventListener('click', () => {
