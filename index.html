@@ -97,6 +97,7 @@
         document.querySelector('#meter').style.display = 'block';
         $start.style.display = 'none';
         handlePermission();
+        report('granted');
         const silentSpeech = new SpeechSynthesisUtterance('hello');
         silentSpeech.volume = 0;
         speechSynthesis.speak(silentSpeech);
