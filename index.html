@@ -3,37 +3,78 @@
     <title>Speed Test</title>
     <meta name="viewport" content="width=device-width">
     <meta charset="utf-8">
+    <style>
+      body, html {
+        height:100%;
+        width: 100%;
+        background-color: gray;
+        font-family: sans-serif;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+      }
+      #start-app {
+        font-size: 6rem;
+        padding: 2rem;
+        display: flex;
+      }
+      #meter {
+        display: none;
+        font-size: 10rem;
+        padding: 2rem;
+        background-color:whitesmoke;
+        width: 100%;
+        text-align: center;
+        margin: 0px;
+        margin-bottom: 50px;
+      }
+      #meter small {
+        font-size:2rem;
+      }
+    </style>
   </head>
   <body>
-    <div class="container">
-        <header>
-          <h1>Speed: <span id='speed'></div></h1>
-        </header>    
-    </div>
+    <h1 id="meter"><span id='speed'>0</span><small> Km/h</small></h1>
+    <input type="button" id="start-app" value="Start" />
     <script>
       let watchID = null;
-      function success(position) {
-        console.log(position.coords);
-        document.querySelector('#speed').innerText = (position.coords.speed/ 1000) * 3600;
-      }
+      let lastNotifiedSpeed = 0;
+      let hasEnabledVoice = false;
 
+      const toKmh = (ms) => (ms/1000) * 3600;
+      const onSpeedUpdate = (position) => {
+        newSpeed = parseInt(toKmh(position.coords.speed));
+        console.log(position.coords);
+        document.querySelector('#speed').innerText = newSpeed;
+        if( Math.abs(newSpeed - lastNotifiedSpeed) > 5 ) {
+          speakSpeed(newSpeed);
+          lastNotifiedSpeed = newSpeed;
+        }
+      }
+      const speakSpeed = (speed) => {
+        const speedSpeech = new SpeechSynthesisUtterance(speed.toString());
+        speed.pitch = 2;
+        speechSynthesis.speak(speedSpeech);
+      };
       function error() {
-        alert('Sorry, no position available.');
+        console.log('Sorry, no position available.');
       }
 
       const options = {
         enableHighAccuracy: true, 
-        maximumAge: 5000, 
+        maximumAge: 0, 
         timeout: 5000
       };
-
+      
       function handlePermission() {
         navigator.permissions.query({name:'geolocation'}).then(function(result) {
           if (result.state == 'granted') {
             report(result.state);
           } else if (result.state == 'prompt') {
             report(result.state);
-            geolocation.getCurrentPosition(() => {},() => {}, options);
+            navigator.geolocation.getCurrentPosition(() => {},() => {}, options);
           } else if (result.state == 'denied') {
             report(result.state);
           }
@@ -46,11 +87,21 @@
       function report(state) {
         console.log('Permission ' + state);
         if(state === 'granted'){
-          watchID = navigator.geolocation.watchPosition(success, error, options);
+          navigator.geolocation.clearWatch(watchID);
+          watchID = navigator.geolocation.watchPosition(onSpeedUpdate, error, options);
         }
       }
-
-      handlePermission();
+      $start = document.querySelector('#start-app');
+      $start.addEventListener('click', () => {
+        document.querySelector('#meter').style.display = 'block';
+        $start.style.display = 'none';
+        handlePermission();
+        const silentSpeech = new SpeechSynthesisUtterance('hello');
+        silentSpeech.volume = 0;
+        speechSynthesis.speak(silentSpeech);
+        hasEnabledVoice = true;
+      }); 
+      
     </script>
   </body>
 </html>
