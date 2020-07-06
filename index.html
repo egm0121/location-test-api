@@ -23,12 +23,11 @@
       #meter {
         display: none;
         font-size: 10rem;
-        padding: 2rem;
+        padding: 10rem;
         background-color:whitesmoke;
         width: 100%;
         text-align: center;
         margin: 0px;
-        margin-bottom: 50px;
       }
       #meter small {
         font-size:2rem;
@@ -42,7 +41,8 @@
       let watchID = null;
       let lastNotifiedSpeed = 0;
       let hasEnabledVoice = false;
-
+      const ua = window.navigator.userAgent;
+      const isIOS = /(iPad|iPhone|iPod).*WebKit/.test(ua) && !/(CriOS|OPiOS)/.test(ua);
       const toKmh = (ms) => (ms/1000) * 3600;
       const onSpeedUpdate = (position) => {
         newSpeed = parseInt(toKmh(position.coords.speed));
@@ -90,6 +90,7 @@
         watchID = navigator.geolocation.watchPosition(onSpeedUpdate, error, options);
       }
       $start = document.querySelector('#start-app');
+
       $start.addEventListener('click', () => {
         document.querySelector('#meter').style.display = 'block';
         $start.style.display = 'none';
@@ -97,6 +98,7 @@
         silentSpeech.volume = 0;
         speechSynthesis.speak(silentSpeech);
         hasEnabledVoice = true;
+        if(!isIOS) handlePermission();
       }); 
       
     </script>
