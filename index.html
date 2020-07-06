@@ -86,6 +86,7 @@
 
       function report(state) {
         console.log('Permission ' + state);
+        alert('Permission: ' + state);
         if(state === 'granted'){
           navigator.geolocation.clearWatch(watchID);
           watchID = navigator.geolocation.watchPosition(onSpeedUpdate, error, options);
