@@ -40,17 +40,23 @@
     <script>
       let watchID = null;
       let lastNotifiedSpeed = 0;
+      let lastNotifiedTime = 0;
       let hasEnabledVoice = false;
       const ua = window.navigator.userAgent;
       const isIOS = /(iPad|iPhone|iPod).*WebKit/.test(ua) && !/(CriOS|OPiOS)/.test(ua);
       const toKmh = (ms) => (ms/1000) * 3600;
       const onSpeedUpdate = (position) => {
-        newSpeed = parseInt(toKmh(position.coords.speed));
+        const newSpeed = parseInt(toKmh(position.coords.speed));
+        const newUpdateTime = Date.now();
         console.log(position.coords);
         document.querySelector('#speed').innerText = newSpeed;
-        if( Math.abs(newSpeed - lastNotifiedSpeed) > 5 ) {
+        if( 
+          Math.abs(newSpeed - lastNotifiedSpeed) >= 5 || 
+          ((newUpdateTime - lastNotifiedTime) / 1000) >= 30
+        ) {
           speakSpeed(newSpeed);
           lastNotifiedSpeed = newSpeed;
+          lastNotifiedTime = Date.now();
         }
       }
       const speakSpeed = (speed) => {
