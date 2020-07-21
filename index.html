@@ -32,10 +32,20 @@
       #meter small {
         font-size:2rem;
       }
+      #topSpeed {
+        font-size: 6rem; 
+      }
+      .secondary-info{
+        color: #6495ed;
+      }
     </style>
   </head>
   <body>
-    <h1 id="meter"><span id='speed'>0</span><small> Km/h</small><br> <span id='topSpeed'>0</span></h1>
+    <h1 id="meter">
+      <span id='speed'>0</span><small> Km/h</small>
+      <br>
+      <span id='topSpeed' class='secondary-info'>0</span><small class='secondary-info'> Max</small>
+    </h1>
     <input type="button" id="start-app" onclick="report('granted')" value="Start" />
     <script>
       let watchID = null;
@@ -56,6 +66,7 @@
         if (newSpeed < MIN_SPEED_KMH) {
           newSpeed = lastNotifiedSpeed;
         }
+        if (newSpeed > topSpeed) topSpeed = newSpeed;
         console.log(position.coords);
         if( 
           newSpeed &&
@@ -66,11 +77,10 @@
         ) {
           speakSpeed(newSpeed);
           lastNotifiedSpeed = newSpeed;
-          if (newSpeed > topSpeed) topSpeed = newSpeed;
           lastNotifiedTime = Date.now();
         }
         document.querySelector('#speed').innerText = newSpeed;
-        document.querySelector('#topSpeed').innerText = newSpeed;
+        document.querySelector('#topSpeed').innerText = topSpeed;
       }
       const speakSpeed = (speed) => {
         const speedSpeech = new SpeechSynthesisUtterance(speed.toString());
